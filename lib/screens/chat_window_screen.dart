@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../theme/app_colors.dart';
+import '../services/pdf_service.dart';
 
 class ChatWindowScreen extends StatefulWidget {
   final Map<String, dynamic> targetUserData;
@@ -91,6 +92,29 @@ class _ChatWindowScreenState extends State<ChatWindowScreen> {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.picture_as_pdf,
+              color: AppColors.primaryGreen,
+            ),
+            tooltip: 'Export PDF Transcript',
+            onPressed: () {
+              final currentUser = FirebaseAuth.instance.currentUser;
+              final currentName =
+                  currentUser?.displayName ??
+                  currentUser?.email?.split('@').first ??
+                  'User';
+
+              PdfService.generateAndDownloadTranscript(
+                chatId: chatId,
+                currentUserName: currentName,
+                targetUserName: widget.targetUserData['name'] ?? 'User',
+              );
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: Column(
         children: [
